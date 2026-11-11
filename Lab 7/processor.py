@@ -1,17 +1,41 @@
 def sanitize_license_plate(plate):
+    if plate is None or not isinstance(plate, str):
+        return ""
     plate = plate.strip()
+    
     for ch in ['-', ' ', '_', '#']:
         plate = plate.replace(ch, '')
     return plate.upper()
 
 def parse_trip_mileage(mileage_csv):
+    if mileage_csv is None or not isinstance(mileage_csv, str):
+        return []
+        
     parts = mileage_csv.split(',')
-    return [float(m) for m in parts]
+    result = []
+    for m in parts:
+        m = m.strip()
+        if m:
+            try:
+                result.append(float(m))
+            except ValueError:
+                pass
+    return result
 
 def format_rental_invoice(record):
+    if record is None or not isinstance(record, str):
+        return "Invalid Record"
     parts = record.split(':')
+    
+    if len(parts) < 3:
+        return "Invalid Record Format"
     driver = parts[0].strip()
-    days = int(parts[1])
+    
+    try:
+        days = int(parts[1].strip())
+    except ValueError:
+        days = 0
+
     category = parts[2].strip()
     daily_rate = 50.0 if category.lower() == "suv" else 30.0
     total = days * daily_rate
